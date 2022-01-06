@@ -21,11 +21,13 @@ char* Arena::AllocateFallback(size_t bytes) {
   if (bytes > kBlockSize / 4) {
     // Object is more than a quarter of our block size.  Allocate it separately
     // to avoid wasting too much space in leftover bytes.
+    // 对象的大小超过了块大小的四分之一。单独分配以避免在剩余字节中浪费太多空间。
     char* result = AllocateNewBlock(bytes);
     return result;
   }
 
   // We waste the remaining space in the current block.
+  // 我们浪费了当前块中剩余的空间。
   alloc_ptr_ = AllocateNewBlock(kBlockSize);
   alloc_bytes_remaining_ = kBlockSize;
 
@@ -49,6 +51,7 @@ char* Arena::AllocateAligned(size_t bytes) {
     alloc_bytes_remaining_ -= needed;
   } else {
     // AllocateFallback always returned aligned memory
+    // AllocateFallback 始终返回对齐内存
     result = AllocateFallback(bytes);
   }
   assert((reinterpret_cast<uintptr_t>(result) & (align - 1)) == 0);
