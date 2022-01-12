@@ -12,12 +12,13 @@ namespace leveldb {
 
 // Helper class that locks a mutex on construction and unlocks the mutex when
 // the destructor of the MutexLock object is invoked.
+// 帮助类，在构造函数里面锁定一个mutex，调用析构函数时解锁这个mutex
 //
-// Typical usage:
+// Typical usage: 经典用法：
 //
 //   void MyClass::MyMethod() {
-//     MutexLock l(&mu_);       // mu_ is an instance variable
-//     ... some complex code, possibly with multiple return paths ...
+//     MutexLock l(&mu_);       // mu_ is an instance variable 是一个实例变量
+//     ... some complex code, possibly with multiple return paths ... 一些复杂的代码，可能有多个返回路径
 //   }
 
 class SCOPED_LOCKABLE MutexLock {
