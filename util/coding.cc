@@ -20,6 +20,7 @@ void PutFixed64(std::string* dst, uint64_t value) {
 
 char* EncodeVarint32(char* dst, uint32_t v) {
   // Operate on characters as unsigneds
+  // 将字符作为无符号字符进行操作
   uint8_t* ptr = reinterpret_cast<uint8_t*>(dst);
   static const int B = 128;
   if (v < (1 << 7)) {
@@ -91,6 +92,7 @@ const char* GetVarint32PtrFallback(const char* p, const char* limit,
     p++;
     if (byte & 128) {
       // More bytes are present
+      // 还有更多字节
       result |= ((byte & 127) << shift);
     } else {
       result |= (byte << shift);
@@ -120,6 +122,7 @@ const char* GetVarint64Ptr(const char* p, const char* limit, uint64_t* value) {
     p++;
     if (byte & 128) {
       // More bytes are present
+      // 还有更多字节
       result |= ((byte & 127) << shift);
     } else {
       result |= (byte << shift);

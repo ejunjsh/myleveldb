@@ -9,7 +9,7 @@
 // 字节序中性编码：
 // * 固定长度的数字首先以最低有效字节编码
 // * 另外，我们支持可变长度的"varint"编码
-// * 编码字符串是用它的长度做前缀，放到"varint"格式里
+// * 编码字符串是用它的长度做前缀，长度放到"varint"格式里
 
 #ifndef STORAGE_LEVELDB_UTIL_CODING_H_
 #define STORAGE_LEVELDB_UTIL_CODING_H_
