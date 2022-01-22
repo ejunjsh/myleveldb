@@ -3,6 +3,7 @@
 // found in the LICENSE file. See the AUTHORS file for names of contributors.
 //
 // A portable implementation of crc32c.
+// crc32c的可移植实现。
 
 #include "util/crc32c.h"
 
@@ -243,9 +244,11 @@ const uint32_t kStrideExtensionTable3[256] = {
     0x9c221d09, 0x6e2e10f7, 0x7dd67004, 0x8fda7dfa};
 
 // CRCs are pre- and post- conditioned by xoring with all ones.
+// CRC通过与所有的xoring进行预处理和后处理。
 static constexpr const uint32_t kCRC32Xor = static_cast<uint32_t>(0xffffffffU);
 
 // Reads a little-endian 32-bit integer from a 32-bit-aligned buffer.
+// 从32位对齐的缓冲区中读取一个小端32位整数。
 inline uint32_t ReadUint32LE(const uint8_t* buffer) {
   return DecodeFixed32(reinterpret_cast<const char*>(buffer));
 }
@@ -253,6 +256,9 @@ inline uint32_t ReadUint32LE(const uint8_t* buffer) {
 // Returns the smallest address >= the given address that is aligned to N bytes.
 //
 // N must be a power of two.
+// 返回最小地址>=与N字节对齐的给定地址。
+//
+// N必须是2的幂。
 template <int N>
 constexpr inline const uint8_t* RoundUp(const uint8_t* pointer) {
   return reinterpret_cast<uint8_t*>(
@@ -264,8 +270,10 @@ constexpr inline const uint8_t* RoundUp(const uint8_t* pointer) {
 
 // Determine if the CPU running this program can accelerate the CRC32C
 // calculation.
+// 确定运行此程序的CPU是否可以加速CRC32C计算。
 static bool CanAccelerateCRC32C() {
   // port::AcceleretedCRC32C returns zero when unable to accelerate.
+  // 返回零则表示不支持加速
   static const char kTestCRCBuffer[] = "TestCRCBuffer";
   static const char kBufSize = sizeof(kTestCRCBuffer) - 1;
   static const uint32_t kTestCRCValue = 0xdcbc59fa;
@@ -284,6 +292,7 @@ uint32_t Extend(uint32_t crc, const char* data, size_t n) {
   uint32_t l = crc ^ kCRC32Xor;
 
 // Process one byte at a time.
+// 一次处理一个字节
 #define STEP1                              \
   do {                                     \
     int c = (l & 0xff) ^ *p++;             \
@@ -291,6 +300,7 @@ uint32_t Extend(uint32_t crc, const char* data, size_t n) {
   } while (0)
 
 // Process one of the 4 strides of 4-byte data.
+// 处理4字节数据的4个步长中的一个。
 #define STEP4(s)                                                               \
   do {                                                                         \
     crc##s = ReadUint32LE(p + s * 4) ^ kStrideExtensionTable3[crc##s & 0xff] ^ \
@@ -300,6 +310,7 @@ uint32_t Extend(uint32_t crc, const char* data, size_t n) {
   } while (0)
 
 // Process a 16-byte swath of 4 strides, each of which has 4 bytes of data.
+// 处理16字节，需要4个步长，每个步长包含4个字节数据
 #define STEP16 \
   do {         \
     STEP4(0);  \
@@ -310,6 +321,7 @@ uint32_t Extend(uint32_t crc, const char* data, size_t n) {
   } while (0)
 
 // Process 4 bytes that were already loaded into a word.
+// 处理已加载到字中的4个字节。
 #define STEP4W(w)                                   \
   do {                                              \
     w ^= l;                                         \
@@ -321,9 +333,12 @@ uint32_t Extend(uint32_t crc, const char* data, size_t n) {
 
   // Point x at first 4-byte aligned byte in the buffer. This might be past the
   // end of the buffer.
+  // 让x指向缓冲里第一个四字节对齐的地址
+  // 这可能已超过缓冲区的末尾。
   const uint8_t* x = RoundUp<4>(p);
   if (x <= e) {
     // Process bytes p is 4-byte aligned.
+    // 处理p，直到它四字节对齐
     while (p != x) {
       STEP1;
     }
@@ -331,6 +346,7 @@ uint32_t Extend(uint32_t crc, const char* data, size_t n) {
 
   if ((e - p) >= 16) {
     // Load a 16-byte swath into the stride partial results.
+    // 加载16字节进来
     uint32_t crc0 = ReadUint32LE(p + 0 * 4) ^ l;
     uint32_t crc1 = ReadUint32LE(p + 1 * 4);
     uint32_t crc2 = ReadUint32LE(p + 2 * 4);
@@ -340,13 +356,17 @@ uint32_t Extend(uint32_t crc, const char* data, size_t n) {
     // It is possible to get better speeds (at least on x86) by interleaving
     // prefetching 256 bytes ahead with processing 64 bytes at a time. See the
     // portable implementation in https://github.com/google/crc32c/.
+    // 通过将预取256字节与一次处理64字节交替进行，可以获得更好的速度（至少在x86上）。
+    // 请参阅中的可移植实现https://github.com/google/crc32c/.
 
     // Process one 16-byte swath at a time.
+    // 一次处理16个字节
     while ((e - p) >= 16) {
       STEP16;
     }
 
     // Advance one word at a time as far as possible.
+    // 尽可能一次处理4个字节（1个字）
     while ((e - p) >= 4) {
       STEP4(0);
       uint32_t tmp = crc0;
@@ -358,6 +378,7 @@ uint32_t Extend(uint32_t crc, const char* data, size_t n) {
     }
 
     // Combine the 4 partial stride results.
+    // 合并
     l = 0;
     STEP4W(crc0);
     STEP4W(crc1);
@@ -366,6 +387,7 @@ uint32_t Extend(uint32_t crc, const char* data, size_t n) {
   }
 
   // Process the last few bytes.
+  // 处理最后一些字节
   while (p != e) {
     STEP1;
   }
