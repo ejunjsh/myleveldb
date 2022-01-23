@@ -181,6 +181,7 @@ void Histogram::Clear() {
 
 void Histogram::Add(double value) {
   // Linear search is fast enough for our usage in db_bench
+  // 线性搜索对于我们在db_bench中的使用来说已经足够快了
   int b = 0;
   while (b < kNumBuckets - 1 && kBucketLimit[b] <= value) {
     b++;
@@ -213,6 +214,7 @@ double Histogram::Percentile(double p) const {
     sum += buckets_[b];
     if (sum >= threshold) {
       // Scale linearly within this bucket
+      // 在此桶内线性缩放
       double left_point = (b == 0) ? 0 : kBucketLimit[b - 1];
       double right_point = kBucketLimit[b];
       double left_sum = sum - buckets_[b];
