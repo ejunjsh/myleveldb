@@ -1,6 +1,6 @@
 # myleveldb
 
-my leveldb practice
+看leveldb，加中文注释，顺便学c++
 
 ## reference
 
