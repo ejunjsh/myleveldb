@@ -3,6 +3,8 @@
 // found in the LICENSE file. See the AUTHORS file for names of contributors.
 //
 // Logger implementation for the Windows platform.
+// Windows平台的Logger实现
+// 这里注释可参见posix_logger.h
 
 #ifndef STORAGE_LEVELDB_UTIL_WINDOWS_LOGGER_H_
 #define STORAGE_LEVELDB_UTIL_WINDOWS_LOGGER_H_
