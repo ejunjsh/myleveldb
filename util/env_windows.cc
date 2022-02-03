@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file. See the AUTHORS file for names of contributors.
 
+// 此文件注释就不翻译了，详见env_posix.cc
+
 // Prevent Windows headers from defining min/max macros and instead
 // use STL.
 #ifndef NOMINMAX
