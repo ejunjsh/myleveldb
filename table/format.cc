@@ -14,6 +14,7 @@ namespace leveldb {
 
 void BlockHandle::EncodeTo(std::string* dst) const {
   // Sanity check that all fields have been set
+  // 检查是否已设置所有字段
   assert(offset_ != ~static_cast<uint64_t>(0));
   assert(size_ != ~static_cast<uint64_t>(0));
   PutVarint64(dst, offset_);
@@ -32,11 +33,11 @@ void Footer::EncodeTo(std::string* dst) const {
   const size_t original_size = dst->size();
   metaindex_handle_.EncodeTo(dst);
   index_handle_.EncodeTo(dst);
-  dst->resize(2 * BlockHandle::kMaxEncodedLength);  // Padding
+  dst->resize(2 * BlockHandle::kMaxEncodedLength);  // Padding 填充
   PutFixed32(dst, static_cast<uint32_t>(kTableMagicNumber & 0xffffffffu));
   PutFixed32(dst, static_cast<uint32_t>(kTableMagicNumber >> 32));
   assert(dst->size() == original_size + kEncodedLength);
-  (void)original_size;  // Disable unused variable warning.
+  (void)original_size;  // Disable unused variable warning. 禁用未使用的变量警告。
 }
 
 Status Footer::DecodeFrom(Slice* input) {
@@ -55,6 +56,7 @@ Status Footer::DecodeFrom(Slice* input) {
   }
   if (result.ok()) {
     // We skip over any leftover data (just padding for now) in "input"
+    // 我们跳过“input”中的任何剩余数据（目前仅填充）
     const char* end = magic_ptr + 8;
     *input = Slice(end, input->data() + input->size() - end);
   }
@@ -69,6 +71,8 @@ Status ReadBlock(RandomAccessFile* file, const ReadOptions& options,
 
   // Read the block contents as well as the type/crc footer.
   // See table_builder.cc for the code that built this structure.
+  // 读取块内容以及type/crc页脚。
+  // 查看table_builder.cc中的代码，那里构建此结构
   size_t n = static_cast<size_t>(handle.size());
   char* buf = new char[n + kBlockTrailerSize];
   Slice contents;
@@ -83,7 +87,8 @@ Status ReadBlock(RandomAccessFile* file, const ReadOptions& options,
   }
 
   // Check the crc of the type and the block contents
-  const char* data = contents.data();  // Pointer to where Read put the data
+  // 检查类型和块内容的crc
+  const char* data = contents.data();  // Pointer to where Read put the data 指向读取数据所在位置的指针
   if (options.verify_checksums) {
     const uint32_t crc = crc32c::Unmask(DecodeFixed32(data + n + 1));
     const uint32_t actual = crc32c::Value(data, n + 1);
@@ -100,10 +105,12 @@ Status ReadBlock(RandomAccessFile* file, const ReadOptions& options,
         // File implementation gave us pointer to some other data.
         // Use it directly under the assumption that it will be live
         // while the file is open.
+        // File实现为我们提供了指向其他数据的指针。
+        // 直接使用它的前提是，文件打开时它将处于活动状态。
         delete[] buf;
         result->data = Slice(data, n);
         result->heap_allocated = false;
-        result->cachable = false;  // Do not double-cache
+        result->cachable = false;  // Do not double-cache 不要双重缓存
       } else {
         result->data = Slice(buf, n);
         result->heap_allocated = true;
