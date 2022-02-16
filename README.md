@@ -14,7 +14,7 @@
 
 -> util/random -> include/leveldb/env -> util/env_posix -> table/format -> table/block_builder 
 
--> table/block -> table/filter_block -> include/leveldb/iterator -> table/iterator
+-> table/block -> table/filter_block -> include/leveldb/iterator -> table/iterator -> table/iterator_wrapper
 
 
 ## 参考
