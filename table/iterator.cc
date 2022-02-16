@@ -11,6 +11,7 @@ Iterator::Iterator() {
   cleanup_head_.next = nullptr;
 }
 
+// 释放资源
 Iterator::~Iterator() {
   if (!cleanup_head_.IsEmpty()) {
     cleanup_head_.Run();
@@ -23,6 +24,7 @@ Iterator::~Iterator() {
   }
 }
 
+// 注册清理函数
 void Iterator::RegisterCleanup(CleanupFunction func, void* arg1, void* arg2) {
   assert(func != nullptr);
   CleanupNode* node;
@@ -40,6 +42,7 @@ void Iterator::RegisterCleanup(CleanupFunction func, void* arg1, void* arg2) {
 
 namespace {
 
+// 定义空迭代器
 class EmptyIterator : public Iterator {
  public:
   EmptyIterator(const Status& s) : status_(s) {}

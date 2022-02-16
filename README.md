@@ -12,9 +12,9 @@
 
 -> util/comparator -> util/crc32c -> util/histogram -> include/leveldb/options -> util/options -> util/posix_logger
 
--> util/random -> include/leveldb/env -> util/env_posix -> table/format -> table/block_builder
+-> util/random -> include/leveldb/env -> util/env_posix -> table/format -> table/block_builder 
 
--> table/block -> table/filter_block
+-> table/block -> table/filter_block -> include/leveldb/iterator -> table/iterator
 
 
 ## 参考
