@@ -14,6 +14,8 @@ namespace leveldb {
 // caches the valid() and key() results for an underlying iterator.
 // This can help avoid virtual function calls and also gives better
 // cache locality.
+// 一个内部包装类，其接口类似于迭代器，用于缓存被包装的迭代器的valid()和key()的结果。
+// 这有助于避免虚拟函数调用，并提供更好的缓存局部性。
 class IteratorWrapper {
  public:
   IteratorWrapper() : iter_(nullptr), valid_(false) {}
@@ -23,6 +25,7 @@ class IteratorWrapper {
 
   // Takes ownership of "iter" and will delete it when destroyed, or
   // when Set() is invoked again.
+  // 获取"iter"的所有权，并在销毁时删掉它，或者再次调用Set() 时也删掉它
   void Set(Iterator* iter) {
     delete iter_;
     iter_ = iter;
@@ -34,6 +37,7 @@ class IteratorWrapper {
   }
 
   // Iterator interface methods
+  // 迭代器接口方法
   bool Valid() const { return valid_; }
   Slice key() const {
     assert(Valid());
@@ -44,6 +48,7 @@ class IteratorWrapper {
     return iter_->value();
   }
   // Methods below require iter() != nullptr
+  // 下面方法需要iter() != nullptr
   Status status() const {
     assert(iter_);
     return iter_->status();
@@ -75,6 +80,7 @@ class IteratorWrapper {
   }
 
  private:
+ // 缓存当前的键
   void Update() {
     valid_ = iter_->Valid();
     if (valid_) {
@@ -84,7 +90,7 @@ class IteratorWrapper {
 
   Iterator* iter_;
   bool valid_;
-  Slice key_;
+  Slice key_; // 用来缓存的键
 };
 
 }  // namespace leveldb
