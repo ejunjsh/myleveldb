@@ -59,7 +59,7 @@ Block::~Block() {
 // 辅助函数：解码从“p”开始的下一个块条目，分别将共享键字节数、非共享字节字节数和值的长度存储在“*shared”、“non_shared”和“*value_length”中。
 // 不会取消引用超过“limit”。
 //
-// 如果检测到任何错误，则返回nullptr。否则，返回一个指向键增量的指针（刚好超过这三个解码值）。
+// 如果检测到任何错误，则返回nullptr。否则，返回一个指向非共享键开始的指针（刚好超过这三个解码值）。
 static inline const char* DecodeEntry(const char* p, const char* limit,
                                       uint32_t* shared, uint32_t* non_shared,
                                       uint32_t* value_length) {

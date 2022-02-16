@@ -4,7 +4,7 @@
 
 ## 看代码路径
 
-include/leveldb/status -> util/status -> util/arena -> include/leveldb/slice -> include/leveldb/filter_policy
+-> include/leveldb/status -> util/status -> util/arena -> include/leveldb/slice -> include/leveldb/filter_policy
 
 -> util/hash -> util/filter_policy -> util/bloom -> util/logging -> util/mutexlock -> include/leveldb/cache
 
@@ -12,9 +12,10 @@ include/leveldb/status -> util/status -> util/arena -> include/leveldb/slice -> 
 
 -> util/comparator -> util/crc32c -> util/histogram -> include/leveldb/options -> util/options -> util/posix_logger
 
--> util/random -> include/leveldb/env -> util/env_posix -> table/format -> table/block -> table/filter_block
+-> util/random -> include/leveldb/env -> util/env_posix -> table/format -> table/block_builder
 
--> table/block_builder
+-> table/block -> table/filter_block
+
 
 ## 参考
 
