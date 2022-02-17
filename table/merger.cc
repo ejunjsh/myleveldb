@@ -11,6 +11,7 @@
 namespace leveldb {
 
 namespace {
+// 合并迭代器
 class MergingIterator : public Iterator {
  public:
   MergingIterator(const Comparator* comparator, Iterator** children, int n)
@@ -60,6 +61,10 @@ class MergingIterator : public Iterator {
     // true for all of the non-current_ children since current_ is
     // the smallest child and key() == current_->key().  Otherwise,
     // we explicitly position the non-current_ children.
+    // 保证所有子都在key()后面。
+    // 如果正在向前的方向，那就表示所有的非当前的子都在正确的方向
+    // 因为current_是最小的子和key() == current_->key().
+    // 否则，我们需要重新调整非当前的子，令它们向前
     if (direction_ != kForward) {
       for (int i = 0; i < n_; i++) {
         IteratorWrapper* child = &children_[i];
@@ -86,6 +91,10 @@ class MergingIterator : public Iterator {
     // true for all of the non-current_ children since current_ is
     // the largest child and key() == current_->key().  Otherwise,
     // we explicitly position the non-current_ children.
+    // 保证所有子都在key()前面。
+    // 如果正在向后的方向，那就表示所有的非当前的子都在正确的方向
+    // 因为current_是最大的子和key() == current_->key().
+    // 否则，我们需要重新调整非当前的子，令它们向后
     if (direction_ != kReverse) {
       for (int i = 0; i < n_; i++) {
         IteratorWrapper* child = &children_[i];
@@ -93,9 +102,11 @@ class MergingIterator : public Iterator {
           child->Seek(key());
           if (child->Valid()) {
             // Child is at first entry >= key().  Step back one to be < key()
+            // 子是在第一个条目刚好 >= key()，回退一步，< key()
             child->Prev();
           } else {
             // Child has no entries >= key().  Position at last entry.
+            // 子没有条目>= key(). 定位到最后个条目
             child->SeekToLast();
           }
         }
@@ -130,6 +141,7 @@ class MergingIterator : public Iterator {
 
  private:
   // Which direction is the iterator moving?
+  // 迭起器移动方向（向前，向后）
   enum Direction { kForward, kReverse };
 
   void FindSmallest();
@@ -138,6 +150,8 @@ class MergingIterator : public Iterator {
   // We might want to use a heap in case there are lots of children.
   // For now we use a simple array since we expect a very small number
   // of children in leveldb.
+  // 我们可能想使用堆，以防有很多孩子。
+  // 现在我们使用一个简单的数组，因为我们希望在leveldb中有非常少的子元素。
   const Comparator* comparator_;
   IteratorWrapper* children_;
   int n_;
@@ -176,6 +190,7 @@ void MergingIterator::FindLargest() {
 }
 }  // namespace
 
+// 初始化一个合并迭代器
 Iterator* NewMergingIterator(const Comparator* comparator, Iterator** children,
                              int n) {
   assert(n >= 0);
