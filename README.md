@@ -16,7 +16,7 @@
 
 -> table/block -> table/filter_block -> include/leveldb/iterator -> table/iterator -> table/iterator_wrapper
 
--> table/merger -> table/two_level_iterator -> table/table
+-> table/merger -> table/two_level_iterator -> include/leveldb/table -> table/table
 
 
 ## 参考
