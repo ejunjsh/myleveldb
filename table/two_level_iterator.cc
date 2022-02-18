@@ -39,6 +39,7 @@ class TwoLevelIterator : public Iterator {
   }
   Status status() const override {
     // It'd be nice if status() returned a const Status& instead of a Status
+    // 如果status()返回Status&会更好
     if (!index_iter_.status().ok()) {
       return index_iter_.status();
     } else if (data_iter_.iter() != nullptr && !data_iter_.status().ok()) {
@@ -62,9 +63,10 @@ class TwoLevelIterator : public Iterator {
   const ReadOptions options_;
   Status status_;
   IteratorWrapper index_iter_;
-  IteratorWrapper data_iter_;  // May be nullptr
+  IteratorWrapper data_iter_;  // May be nullptr 可能为空指针
   // If data_iter_ is non-null, then "data_block_handle_" holds the
   // "index_value" passed to block_function_ to create the data_iter_.
+  // 如果data_iter_为非空，则"data_block_handle_"持有"index_value"，而这个"index_value"将传递到block_function_去创建data_iter_
   std::string data_block_handle_;
 };
 
@@ -115,6 +117,7 @@ void TwoLevelIterator::Prev() {
 void TwoLevelIterator::SkipEmptyDataBlocksForward() {
   while (data_iter_.iter() == nullptr || !data_iter_.Valid()) {
     // Move to next block
+    // 移到下一个块
     if (!index_iter_.Valid()) {
       SetDataIterator(nullptr);
       return;
@@ -128,6 +131,7 @@ void TwoLevelIterator::SkipEmptyDataBlocksForward() {
 void TwoLevelIterator::SkipEmptyDataBlocksBackward() {
   while (data_iter_.iter() == nullptr || !data_iter_.Valid()) {
     // Move to next block
+    // 移到下一个块
     if (!index_iter_.Valid()) {
       SetDataIterator(nullptr);
       return;
@@ -152,6 +156,7 @@ void TwoLevelIterator::InitDataBlock() {
         handle.compare(data_block_handle_) == 0) {
       // data_iter_ is already constructed with this iterator, so
       // no need to change anything
+      // data_iter_已经由这个迭代器构造啦，所以没必要改变什么
     } else {
       Iterator* iter = (*block_function_)(arg_, options_, handle);
       data_block_handle_.assign(handle.data(), handle.size());
