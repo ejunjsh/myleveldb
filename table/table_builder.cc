@@ -44,7 +44,7 @@ struct TableBuilder::Rep {
   BlockBuilder index_block;
   std::string last_key;
   int64_t num_entries;
-  bool closed;  // Either Finish() or Abandon() has been called.
+  bool closed;  // Either Finish() or Abandon() has been called. Finish() 或 Abandon() 被调用时会设置这个为true
   FilterBlockBuilder* filter_block;
 
   // We do not emit the index entry for a block until we have seen the
@@ -56,8 +56,13 @@ struct TableBuilder::Rep {
   // blocks.
   //
   // Invariant: r->pending_index_entry is true only if data_block is empty.
+  // 在看到下一个数据块的第一个键之前，我们不会发出该块的索引项。
+  // 这允许我们在索引块中使用较短的键。
+  // 例如，在"the quick brown fox"和"the who"键之间考虑块边界。我们可以使用"the r"作为索引块项的键，因为它>=第一个块中的所有项，而<后续块中的所有项。
+  //
+  // 不变量：r->pending_index_entry只有在数据块为空时才为真。
   bool pending_index_entry;
-  BlockHandle pending_handle;  // Handle to add to index block
+  BlockHandle pending_handle;  // Handle to add to index block 加到索引块的句柄
 
   std::string compressed_output;
 };
@@ -70,7 +75,7 @@ TableBuilder::TableBuilder(const Options& options, WritableFile* file)
 }
 
 TableBuilder::~TableBuilder() {
-  assert(rep_->closed);  // Catch errors where caller forgot to call Finish()
+  assert(rep_->closed);  // Catch errors where caller forgot to call Finish() 捕捉调用方忘记调用Finish()的错误
   delete rep_->filter_block;
   delete rep_;
 }
@@ -79,12 +84,14 @@ Status TableBuilder::ChangeOptions(const Options& options) {
   // Note: if more fields are added to Options, update
   // this function to catch changes that should not be allowed to
   // change in the middle of building a Table.
+  // 注意：如果将更多的字段添加到选项中，则更新此函数以捕获不应允许在构建表中间更改的更改。
   if (options.comparator != rep_->options.comparator) {
     return Status::InvalidArgument("changing comparator while building table");
   }
 
   // Note that any live BlockBuilders point to rep_->options and therefore
   // will automatically pick up the updated options.
+  // 注意：任何活的块构造器都有指向rep_->options的指针，所以任何更新的选项都会对块构造器可见
   rep_->options = options;
   rep_->index_block_options = options;
   rep_->index_block_options.block_restart_interval = 1;
@@ -140,9 +147,10 @@ void TableBuilder::Flush() {
 
 void TableBuilder::WriteBlock(BlockBuilder* block, BlockHandle* handle) {
   // File format contains a sequence of blocks where each block has:
-  //    block_data: uint8[n]
-  //    type: uint8
-  //    crc: uint32
+  // 文件格式包含一系列块，其中每个块具有：
+  //    block_data: uint8[n]      块数据
+  //    type: uint8               压缩类型（不压缩，snappy压缩）
+  //    crc: uint32               crc完整性验证
   assert(ok());
   Rep* r = rep_;
   Slice raw = block->Finish();
@@ -150,6 +158,7 @@ void TableBuilder::WriteBlock(BlockBuilder* block, BlockHandle* handle) {
   Slice block_contents;
   CompressionType type = r->options.compression;
   // TODO(postrelease): Support more compression options: zlib?
+  // 支持更多压缩选项：zlib?
   switch (type) {
     case kNoCompression:
       block_contents = raw;
@@ -163,6 +172,7 @@ void TableBuilder::WriteBlock(BlockBuilder* block, BlockHandle* handle) {
       } else {
         // Snappy not supported, or compressed less than 12.5%, so just
         // store uncompressed form
+        // Snappy不支持，或者压缩率小于12.5%，这样的话，保存未压缩形态
         block_contents = raw;
         type = kNoCompression;
       }
@@ -184,7 +194,7 @@ void TableBuilder::WriteRawBlock(const Slice& block_contents,
     char trailer[kBlockTrailerSize];
     trailer[0] = type;
     uint32_t crc = crc32c::Value(block_contents.data(), block_contents.size());
-    crc = crc32c::Extend(crc, trailer, 1);  // Extend crc to cover block type
+    crc = crc32c::Extend(crc, trailer, 1);  // Extend crc to cover block type 扩充crc去覆盖块类型
     EncodeFixed32(trailer + 1, crc32c::Mask(crc));
     r->status = r->file->Append(Slice(trailer, kBlockTrailerSize));
     if (r->status.ok()) {
@@ -204,16 +214,19 @@ Status TableBuilder::Finish() {
   BlockHandle filter_block_handle, metaindex_block_handle, index_block_handle;
 
   // Write filter block
+  // 写筛选器块
   if (ok() && r->filter_block != nullptr) {
     WriteRawBlock(r->filter_block->Finish(), kNoCompression,
                   &filter_block_handle);
   }
 
   // Write metaindex block
+  // 写元索引块
   if (ok()) {
     BlockBuilder meta_index_block(&r->options);
     if (r->filter_block != nullptr) {
       // Add mapping from "filter.Name" to location of filter data
+      // 加一个从"filter.Name"到筛选器数据位置的映射
       std::string key = "filter.";
       key.append(r->options.filter_policy->Name());
       std::string handle_encoding;
@@ -222,10 +235,12 @@ Status TableBuilder::Finish() {
     }
 
     // TODO(postrelease): Add stats and other meta blocks
+    // 加统计数据和其他元数据块
     WriteBlock(&meta_index_block, &metaindex_block_handle);
   }
 
   // Write index block
+  // 写索引块
   if (ok()) {
     if (r->pending_index_entry) {
       r->options.comparator->FindShortSuccessor(&r->last_key);
@@ -238,6 +253,7 @@ Status TableBuilder::Finish() {
   }
 
   // Write footer
+  // 写页脚
   if (ok()) {
     Footer footer;
     footer.set_metaindex_handle(metaindex_block_handle);
