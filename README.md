@@ -18,7 +18,7 @@
 
 -> table/merger -> table/two_level_iterator -> include/leveldb/table -> table/table
 
--> include/leveldb/table_builder -> table/table_builder -> db/skiplist
+-> include/leveldb/table_builder -> table/table_builder -> db/skiplist -> db/memtable
 
 ## 参考
 
