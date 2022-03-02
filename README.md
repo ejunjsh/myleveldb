@@ -18,10 +18,14 @@
 
 -> table/merger -> table/two_level_iterator -> include/leveldb/table -> table/table
 
--> include/leveldb/table_builder -> table/table_builder
+-> include/leveldb/table_builder -> table/table_builder -> db/skiplist
 
 ## 参考
 
 [leveldb源码](https://github.com/google/leveldb)
 
 [sstable 格式](https://www.cnblogs.com/cobbliu/p/6194072.html)
+
+[leveldb NoDestructor类解析](https://blog.csdn.net/kdb_viewer/article/details/108471710)
+
+[leveldb skiplist](https://www.jianshu.com/p/6624befde844)
