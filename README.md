@@ -18,7 +18,11 @@
 
 -> table/merger -> table/two_level_iterator -> include/leveldb/table -> table/table
 
--> include/leveldb/table_builder -> table/table_builder -> db/skiplist -> db/log_format -> db/memtable
+-> include/leveldb/table_builder -> table/table_builder -> db/skiplist -> db/log_format 
+
+-> db/log_reader
+
+-> db/memtable
 
 ## 相关文档翻译
 
