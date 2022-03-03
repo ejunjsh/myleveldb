@@ -20,6 +20,12 @@
 
 -> include/leveldb/table_builder -> table/table_builder -> db/skiplist -> db/log_format -> db/memtable
 
+## 相关文档翻译
+
+[sstable格式](https://github.com/ejunjsh/myleveldb/blob/main/doc/table_format.md)
+
+[日志格式](https://github.com/ejunjsh/myleveldb/blob/main/doc/log_format.md)
+
 ## 参考
 
 [leveldb源码](https://github.com/google/leveldb)
