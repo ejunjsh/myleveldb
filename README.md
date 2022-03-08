@@ -20,7 +20,7 @@
 
 -> include/leveldb/table_builder -> table/table_builder -> db/skiplist -> db/log_format 
 
--> db/log_reader
+-> db/log_reader -> db/log_writer
 
 -> db/memtable
 
