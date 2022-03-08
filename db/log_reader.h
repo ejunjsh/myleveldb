@@ -91,9 +91,9 @@ class Reader {
     // * The record is below constructor's initial_offset (No drop is reported)
     // 当我们发现无效的物理记录时返回。
     // 目前有三种情况会发生这种情况：
-    // * 记录的CRC无效（ReadPhysicalRecord报告下降）
-    // * 记录长度为0（未报告下降）
-    // * 记录低于构造器的initial_offset（未报告下降）
+    // * 记录的CRC无效（ReadPhysicalRecord报告文件损坏）
+    // * 记录长度为0（未报告文件损坏）
+    // * 记录低于构造器的initial_offset（未报告文件损坏）
     kBadRecord = kMaxRecordType + 2
   };
 
@@ -119,7 +119,7 @@ class Reader {
   SequentialFile* const file_;
   Reporter* const reporter_;
   bool const checksum_;
-  char* const backing_store_;
+  char* const backing_store_; // buffer_后面的真正的缓存
   Slice buffer_;
   bool eof_;  // Last Read() indicated EOF by returning < kBlockSize
               // 在上一次的调用Read()返回的值< kBlockSize 则是EOF，
@@ -138,8 +138,8 @@ class Reader {
   // True if we are resynchronizing after a seek (initial_offset_ > 0). In
   // particular, a run of kMiddleType and kLastType records can be silently
   // skipped in this mode
-  // 在一次查找后（initial_offset_ > 0），如果我们正在重新同步，则返回true
-  // 特别的，在这个模式下，一些kMiddleType和kLastType记录可能安静的被跳过
+  // 在一次查找后（initial_offset_ > 0），如果我们正在重新同步，则是true
+  // 特别的，在这个模式下，一些kMiddleType和kLastType记录可能悄悄的被跳过
   bool resyncing_;
 };
 
