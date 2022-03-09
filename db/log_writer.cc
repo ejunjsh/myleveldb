@@ -38,6 +38,8 @@ Status Writer::AddRecord(const Slice& slice) {
   // Fragment the record if necessary and emit it.  Note that if slice
   // is empty, we still want to iterate once to emit a single
   // zero-length record
+  // 如有必要，将记录分割并发出。请注意，
+  // 如果slice为空，我们仍然希望迭代一次以发出一条零长度记录
   Status s;
   bool begin = true;
   do {
@@ -45,6 +47,7 @@ Status Writer::AddRecord(const Slice& slice) {
     assert(leftover >= 0);
     if (leftover < kHeaderSize) {
       // Switch to a new block
+      // 切换新的块
       if (leftover > 0) {
         // Fill the trailer (literal below relies on kHeaderSize being 7)
         static_assert(kHeaderSize == 7, "");
@@ -54,6 +57,7 @@ Status Writer::AddRecord(const Slice& slice) {
     }
 
     // Invariant: we never leave < kHeaderSize bytes in a block.
+    // 不变量：我们从不在块中保留<kHeaderSize字节。
     assert(kBlockSize - block_offset_ - kHeaderSize >= 0);
 
     const size_t avail = kBlockSize - block_offset_ - kHeaderSize;
@@ -81,21 +85,24 @@ Status Writer::AddRecord(const Slice& slice) {
 
 Status Writer::EmitPhysicalRecord(RecordType t, const char* ptr,
                                   size_t length) {
-  assert(length <= 0xffff);  // Must fit in two bytes
+  assert(length <= 0xffff);  // Must fit in two bytes 必须两个字节以内
   assert(block_offset_ + kHeaderSize + length <= kBlockSize);
 
   // Format the header
+  // 格式化头
   char buf[kHeaderSize];
   buf[4] = static_cast<char>(length & 0xff);
   buf[5] = static_cast<char>(length >> 8);
   buf[6] = static_cast<char>(t);
 
   // Compute the crc of the record type and the payload.
+  // 计算记录类型和内容的crc
   uint32_t crc = crc32c::Extend(type_crc_[t], ptr, length);
-  crc = crc32c::Mask(crc);  // Adjust for storage
+  crc = crc32c::Mask(crc);  // Adjust for storage  调整存储空间
   EncodeFixed32(buf, crc);
 
   // Write the header and the payload
+  // 写入头和内容
   Status s = dest_->Append(Slice(buf, kHeaderSize));
   if (s.ok()) {
     s = dest_->Append(Slice(ptr, length));
