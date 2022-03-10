@@ -51,7 +51,7 @@ std::string SSTTableFileName(const std::string& dbname, uint64_t number);
 // Return the name of the descriptor file for the db named by
 // "dbname" and the specified incarnation number.  The result will be
 // prefixed with "dbname".
-// 返回描述符文件名，该名称在数据库中以“dbname”命名，并带有指定的数字。结果将以“dbname”作为前缀。
+// 返回描述符（MANIFEST）的文件名，该名称在数据库中以“dbname”命名，并带有指定的数字。结果将以“dbname”作为前缀。
 std::string DescriptorFileName(const std::string& dbname, uint64_t number);
 
 // Return the name of the current file.  This file contains the name

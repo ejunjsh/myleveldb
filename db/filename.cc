@@ -14,6 +14,7 @@
 namespace leveldb {
 
 // A utility routine: write "data" to the named file and Sync() it.
+// 一个工具方法： 写"data"到某命名的文件，然后Sync()它
 Status WriteStringToFileSync(Env* env, const Slice& data,
                              const std::string& fname);
 
@@ -64,11 +65,13 @@ std::string InfoLogFileName(const std::string& dbname) {
 }
 
 // Return the name of the old info log file for "dbname".
+// 返回“dbname”的旧信息日志文件的名称。
 std::string OldInfoLogFileName(const std::string& dbname) {
   return dbname + "/LOG.old";
 }
 
 // Owned filenames have the form:
+// 所有文件名的格式如下：
 //    dbname/CURRENT
 //    dbname/LOCK
 //    dbname/LOG
@@ -123,6 +126,7 @@ bool ParseFileName(const std::string& filename, uint64_t* number,
 Status SetCurrentFile(Env* env, const std::string& dbname,
                       uint64_t descriptor_number) {
   // Remove leading "dbname/" and add newline to manifest file name
+  // 移除前缀的"dbname/" ，把清单文件名作为一行加到CURRENT文件里
   std::string manifest = DescriptorFileName(dbname, descriptor_number);
   Slice contents = manifest;
   assert(contents.starts_with(dbname + "/"));
