@@ -8,6 +8,8 @@
 
 // This workaround can be removed when leveldb::Env::DeleteFile is removed.
 // See env.h for justification.
+// 删除leveldb::Env::DeleteFile时，可以删除此变通方法。
+// 详情查看env.h 
 #if defined(_WIN32) && defined(LEVELDB_DELETEFILE_UNDEFINED)
 #undef DeleteFile
 #endif
@@ -61,7 +63,7 @@ static Status DoWriteStringToFile(Env* env, const Slice& data,
   if (s.ok()) {
     s = file->Close();
   }
-  delete file;  // Will auto-close if we did not close above
+  delete file;  // Will auto-close if we did not close above 如果我们没有在上面关闭，会自动关闭
   if (!s.ok()) {
     env->RemoveFile(fname);
   }
