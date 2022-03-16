@@ -43,3 +43,5 @@
 [leveldb 日志格式](https://zhuanlan.zhihu.com/p/149794318?from_voters_page=true)
 
 [leveldb 日志读取](https://zhuanlan.zhihu.com/p/44150093)
+
+[leveldb 键](https://zhuanlan.zhihu.com/p/272468157)
