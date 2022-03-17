@@ -49,6 +49,10 @@ int InternalKeyComparator::Compare(const Slice& akey, const Slice& bkey) const {
   //    increasing user key (according to user-supplied comparator)
   //    decreasing sequence number
   //    decreasing type (though sequence# should be enough to disambiguate)
+  // 按下面排序：
+  //    按用户键升序（根据用户提供的比较器）
+  //    按序列号降序
+  //    按类型降序（尽管序列号应该足以消除歧义）
   int r = user_comparator_->Compare(ExtractUserKey(akey), ExtractUserKey(bkey));
   if (r == 0) {
     const uint64_t anum = DecodeFixed64(akey.data() + akey.size() - 8);
@@ -65,6 +69,7 @@ int InternalKeyComparator::Compare(const Slice& akey, const Slice& bkey) const {
 void InternalKeyComparator::FindShortestSeparator(std::string* start,
                                                   const Slice& limit) const {
   // Attempt to shorten the user portion of the key
+  // 尝试缩短键的用户部分
   Slice user_start = ExtractUserKey(*start);
   Slice user_limit = ExtractUserKey(limit);
   std::string tmp(user_start.data(), user_start.size());
@@ -73,6 +78,8 @@ void InternalKeyComparator::FindShortestSeparator(std::string* start,
       user_comparator_->Compare(user_start, tmp) < 0) {
     // User key has become shorter physically, but larger logically.
     // Tack on the earliest possible number to the shortened user key.
+    // 用户键在物理上变短了，但在逻辑上变大了。
+    // 在缩短的用户键上附加尽可能早的数字。
     PutFixed64(&tmp,
                PackSequenceAndType(kMaxSequenceNumber, kValueTypeForSeek));
     assert(this->Compare(*start, tmp) < 0);
@@ -89,6 +96,8 @@ void InternalKeyComparator::FindShortSuccessor(std::string* key) const {
       user_comparator_->Compare(user_key, tmp) < 0) {
     // User key has become shorter physically, but larger logically.
     // Tack on the earliest possible number to the shortened user key.
+    // 用户键在物理上变短了，但在逻辑上变大了。
+    // 在缩短的用户键上附加尽可能早的数字。
     PutFixed64(&tmp,
                PackSequenceAndType(kMaxSequenceNumber, kValueTypeForSeek));
     assert(this->Compare(*key, tmp) < 0);
@@ -102,6 +111,7 @@ void InternalFilterPolicy::CreateFilter(const Slice* keys, int n,
                                         std::string* dst) const {
   // We rely on the fact that the code in table.cc does not mind us
   // adjusting keys[].
+  // 我们依赖于table.cc中的代码, 不介意我们调整keys[]。
   Slice* mkey = const_cast<Slice*>(keys);
   for (int i = 0; i < n; i++) {
     mkey[i] = ExtractUserKey(keys[i]);
@@ -116,7 +126,7 @@ bool InternalFilterPolicy::KeyMayMatch(const Slice& key, const Slice& f) const {
 
 LookupKey::LookupKey(const Slice& user_key, SequenceNumber s) {
   size_t usize = user_key.size();
-  size_t needed = usize + 13;  // A conservative estimate
+  size_t needed = usize + 13;  // A conservative estimate 保守估计
   char* dst;
   if (needed <= sizeof(space_)) {
     dst = space_;
