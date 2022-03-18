@@ -50,6 +50,7 @@ Status Writer::AddRecord(const Slice& slice) {
       // 切换新的块
       if (leftover > 0) {
         // Fill the trailer (literal below relies on kHeaderSize being 7)
+        // 填充trailer（以下文字取决于kHeaderSize为7）
         static_assert(kHeaderSize == 7, "");
         dest_->Append(Slice("\x00\x00\x00\x00\x00\x00", leftover));
       }
