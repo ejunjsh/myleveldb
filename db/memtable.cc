@@ -14,7 +14,7 @@ namespace leveldb {
 static Slice GetLengthPrefixedSlice(const char* data) {
   uint32_t len;
   const char* p = data;
-  p = GetVarint32Ptr(p, p + 5, &len);  // +5: we assume "p" is not corrupted
+  p = GetVarint32Ptr(p, p + 5, &len);  // +5: we assume "p" is not corrupted 这里假设p没有损坏
   return Slice(p, len);
 }
 
@@ -28,6 +28,7 @@ size_t MemTable::ApproximateMemoryUsage() { return arena_.MemoryUsage(); }
 int MemTable::KeyComparator::operator()(const char* aptr,
                                         const char* bptr) const {
   // Internal keys are encoded as length-prefixed strings.
+  // 内部键被编码为长度前缀字符串。
   Slice a = GetLengthPrefixedSlice(aptr);
   Slice b = GetLengthPrefixedSlice(bptr);
   return comparator.Compare(a, b);
@@ -36,6 +37,8 @@ int MemTable::KeyComparator::operator()(const char* aptr,
 // Encode a suitable internal key target for "target" and return it.
 // Uses *scratch as scratch space, and the returned pointer will point
 // into this scratch space.
+// 为“target”编码一个合适的内部键目标并返回它。
+// 使用*scratch作为临时空间，返回的指针将指向该临时空间。
 static const char* EncodeKey(std::string* scratch, const Slice& target) {
   scratch->clear();
   PutVarint32(scratch, target.size());
@@ -68,7 +71,7 @@ class MemTableIterator : public Iterator {
 
  private:
   MemTable::Table::Iterator iter_;
-  std::string tmp_;  // For passing to EncodeKey
+  std::string tmp_;  // For passing to EncodeKey 为了传递给EncodeKey
 };
 
 Iterator* MemTable::NewIterator() { return new MemTableIterator(&table_); }
@@ -76,6 +79,7 @@ Iterator* MemTable::NewIterator() { return new MemTableIterator(&table_); }
 void MemTable::Add(SequenceNumber s, ValueType type, const Slice& key,
                    const Slice& value) {
   // Format of an entry is concatenation of:
+  // 条目的格式是以下内容的合并：
   //  key_size     : varint32 of internal_key.size()
   //  key bytes    : char[internal_key.size()]
   //  tag          : uint64((sequence << 8) | type)
@@ -105,6 +109,7 @@ bool MemTable::Get(const LookupKey& key, std::string* value, Status* s) {
   iter.Seek(memkey.data());
   if (iter.Valid()) {
     // entry format is:
+    // 条目格式：
     //    klength  varint32
     //    userkey  char[klength]
     //    tag      uint64
@@ -113,6 +118,8 @@ bool MemTable::Get(const LookupKey& key, std::string* value, Status* s) {
     // Check that it belongs to same user key.  We do not check the
     // sequence number since the Seek() call above should have skipped
     // all entries with overly large sequence numbers.
+    // 检查它是否属于同一用户键。我们不检查序列号，
+    // 因为上面的Seek()调用应该跳过所有序列号过大的条目。
     const char* entry = iter.key();
     uint32_t key_length;
     const char* key_ptr = GetVarint32Ptr(entry, entry + 5, &key_length);
