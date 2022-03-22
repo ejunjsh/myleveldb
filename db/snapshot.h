@@ -14,6 +14,8 @@ class SnapshotList;
 
 // Snapshots are kept in a doubly-linked list in the DB.
 // Each SnapshotImpl corresponds to a particular sequence number.
+// 快照保存在数据库中的双链接列表中。
+// 每个SnapshotImpl对应一个特定的序列号。
 class SnapshotImpl : public Snapshot {
  public:
   SnapshotImpl(SequenceNumber sequence_number)
@@ -26,6 +28,8 @@ class SnapshotImpl : public Snapshot {
 
   // SnapshotImpl is kept in a doubly-linked circular list. The SnapshotList
   // implementation operates on the next/previous fields directly.
+  // SnapshotImpl保存在一个双链接循环列表中。
+  // SnapshotList实现直接在下一个/上一个字段上的操作。
   SnapshotImpl* prev_;
   SnapshotImpl* next_;
 
@@ -54,6 +58,7 @@ class SnapshotList {
   }
 
   // Creates a SnapshotImpl and appends it to the end of the list.
+  // 创建SnapshotImpl并将其附加到列表的末尾。
   SnapshotImpl* New(SequenceNumber sequence_number) {
     assert(empty() || newest()->sequence_number_ <= sequence_number);
 
@@ -76,6 +81,11 @@ class SnapshotList {
   // The snapshot pointer should not be const, because its memory is
   // deallocated. However, that would force us to change DB::ReleaseSnapshot(),
   // which is in the API, and currently takes a const Snapshot.
+  // 从此列表中删除SnapshotImpl。
+  //
+  // 快照必须是通过在此列表上调用New()创建的。
+  //
+  // 快照指针不应为常量，因为其内存已释放。然而，这将迫使我们更改API中的DB::ReleaseSnapshot()，它当前会获取一个常量快照。
   void Delete(const SnapshotImpl* snapshot) {
 #if !defined(NDEBUG)
     assert(snapshot->list_ == this);
@@ -87,6 +97,7 @@ class SnapshotList {
 
  private:
   // Dummy head of doubly-linked list of snapshots
+  // 双链接快照列表的虚拟头
   SnapshotImpl head_;
 };
 
