@@ -16,6 +16,7 @@ struct TableAndFile {
   Table* table;
 };
 
+// 删除条目，并释放资源
 static void DeleteEntry(const Slice& key, void* value) {
   TableAndFile* tf = reinterpret_cast<TableAndFile*>(value);
   delete tf->table;
@@ -23,6 +24,7 @@ static void DeleteEntry(const Slice& key, void* value) {
   delete tf;
 }
 
+// 取消引用条目，方便LRU释放资源
 static void UnrefEntry(void* arg1, void* arg2) {
   Cache* cache = reinterpret_cast<Cache*>(arg1);
   Cache::Handle* h = reinterpret_cast<Cache::Handle*>(arg2);
@@ -38,6 +40,7 @@ TableCache::TableCache(const std::string& dbname, const Options& options,
 
 TableCache::~TableCache() { delete cache_; }
 
+// 查找表缓存，没有找到，则从文件读入，并插入缓存
 Status TableCache::FindTable(uint64_t file_number, uint64_t file_size,
                              Cache::Handle** handle) {
   Status s;
@@ -65,6 +68,8 @@ Status TableCache::FindTable(uint64_t file_number, uint64_t file_size,
       delete file;
       // We do not cache error results so that if the error is transient,
       // or somebody repairs the file, we recover automatically.
+      // 我们不会缓存错误结果，因此如果错误是暂时的，
+      // 或者有人修复了文件，我们会自动恢复。
     } else {
       TableAndFile* tf = new TableAndFile;
       tf->file = file;
