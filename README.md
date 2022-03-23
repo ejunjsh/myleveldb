@@ -22,7 +22,7 @@
 
 -> db/log_reader -> db/log_writer -> db/filename -> include/leveldb/db -> db/dbformat
 
--> db/memtable -> db/snapshot
+-> db/memtable -> db/snapshot -> db/table_cache
 
 ## 相关文档翻译
 
