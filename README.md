@@ -45,3 +45,5 @@
 [leveldb 日志读取](https://zhuanlan.zhihu.com/p/44150093)
 
 [leveldb 键](https://zhuanlan.zhihu.com/p/272468157)
+
+[leveldb 高效存储实现](https://blog.csdn.net/weixin_45583158/article/details/100143516)

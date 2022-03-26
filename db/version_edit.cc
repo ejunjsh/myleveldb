@@ -11,6 +11,7 @@ namespace leveldb {
 
 // Tag numbers for serialized VersionEdit.  These numbers are written to
 // disk and should not be changed.
+// 序列化VersionEdit的标记号。这些数字被写入磁盘，不应更改。
 enum Tag {
   kComparator = 1,
   kLogNumber = 2,
@@ -20,6 +21,7 @@ enum Tag {
   kDeletedFile = 6,
   kNewFile = 7,
   // 8 was used for large value refs
+  // 8用来引用大值
   kPrevLogNumber = 9
 };
 
@@ -110,6 +112,7 @@ Status VersionEdit::DecodeFrom(const Slice& src) {
   uint32_t tag;
 
   // Temporary storage for parsing
+  // 解析时用来临时存储的
   int level;
   uint64_t number;
   FileMetaData f;
