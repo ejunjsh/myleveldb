@@ -47,3 +47,7 @@
 [leveldb 键](https://zhuanlan.zhihu.com/p/272468157)
 
 [leveldb 高效存储实现](https://blog.csdn.net/weixin_45583158/article/details/100143516)
+
+[leveldb 版本控制](https://www.jianshu.com/p/9bd10f32e38c)
+
+[leveldb compaction](https://www.jianshu.com/p/0f216c6a397a)
