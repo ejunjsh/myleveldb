@@ -51,3 +51,7 @@
 [leveldb 版本控制](https://www.jianshu.com/p/9bd10f32e38c)
 
 [leveldb compaction](https://www.jianshu.com/p/0f216c6a397a)
+
+[leveldb iterator](http://catkang.github.io/2017/02/12/leveldb-iterator.html)
+
+[leveldb db_iter](https://blog.csdn.net/weixin_36145588/article/details/78690482)
