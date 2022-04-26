@@ -49,7 +49,7 @@ static const int kL0_StopWritesTrigger = 12;
 static const int kMaxMemCompactLevel = 2;
 
 // Approximate gap in bytes between samples of data read during iteration.
-// 迭代期间读取的数据样本之间的近似字节间隔。
+// 迭代期间读取的数据样本之间的近似字节间隔。(10MB)
 static const int kReadBytesPeriod = 1048576;
 
 }  // namespace config
