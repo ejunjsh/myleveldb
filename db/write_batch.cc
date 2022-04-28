@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file. See the AUTHORS file for names of contributors.
 //
+// rep_的格式
 // WriteBatch::rep_ :=
 //    sequence: fixed64
 //    count: fixed32
@@ -24,6 +25,7 @@
 namespace leveldb {
 
 // WriteBatch header has an 8-byte sequence number followed by a 4-byte count.
+// WriteBatch头有一个8字节的序列号，后跟一个4字节的计数。
 static const size_t kHeader = 12;
 
 WriteBatch::WriteBatch() { Clear(); }
