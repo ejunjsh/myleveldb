@@ -40,6 +40,7 @@ Status BuildTable(const std::string& dbname, Env* env, const Options& options,
     }
 
     // Finish and check for builder errors
+    // 写入文件，检查看看构造器是否报错
     s = builder->Finish();
     if (s.ok()) {
       meta->file_size = builder->FileSize();
@@ -48,6 +49,7 @@ Status BuildTable(const std::string& dbname, Env* env, const Options& options,
     delete builder;
 
     // Finish and check for file errors
+    // 刷入到硬盘
     if (s.ok()) {
       s = file->Sync();
     }
@@ -59,6 +61,7 @@ Status BuildTable(const std::string& dbname, Env* env, const Options& options,
 
     if (s.ok()) {
       // Verify that the table is usable
+      // 验证表是否可用
       Iterator* it = table_cache->NewIterator(ReadOptions(), meta->number,
                                               meta->file_size);
       s = it->status();
@@ -67,13 +70,16 @@ Status BuildTable(const std::string& dbname, Env* env, const Options& options,
   }
 
   // Check for input iterator errors
+  // 检查输入的迭代器是否报错
   if (!iter->status().ok()) {
     s = iter->status();
   }
 
   if (s.ok() && meta->file_size > 0) {
     // Keep it
+    // 没问题，保留
   } else {
+    // 有问题，删除
     env->RemoveFile(fname);
   }
   return s;
