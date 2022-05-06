@@ -24,7 +24,7 @@
 
 -> db/memtable -> db/snapshot -> db/table_cache -> db/version_edit -> db/version_set -> db/db_iter
 
--> include/leveldb/write_batch -> db/write_batch_internal -> db/write_batch -> db/db_impl
+-> include/leveldb/write_batch -> db/write_batch_internal -> db/write_batch -> db/builder -> db/db_impl
 
 ## 相关文档翻译
 
