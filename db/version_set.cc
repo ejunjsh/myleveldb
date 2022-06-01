@@ -1358,12 +1358,15 @@ Iterator* VersionSet::MakeInputIterator(Compaction* c) {
   // Level-0 files have to be merged together.  For other levels,
   // we will make a concatenating iterator per level.
   // TODO(opt): use concatenating iterator for level-0 if there is no overlap
+  // 0层的每个文件的迭代器和其他的层的每个层的迭代器（每一层组成一个TwoLevelIterator）组成一个MergingIterator
+  //  TODO(opt): 如果0层没有任何文件重叠，可以考虑为0层生成一个TwoLevelIterator
   const int space = (c->level() == 0 ? c->inputs_[0].size() + 1 : 2);
   Iterator** list = new Iterator*[space];
   int num = 0;
   for (int which = 0; which < 2; which++) {
     if (!c->inputs_[which].empty()) {
       if (c->level() + which == 0) {
+        // 0层每个文件一个迭代器
         const std::vector<FileMetaData*>& files = c->inputs_[which];
         for (size_t i = 0; i < files.size(); i++) {
           list[num++] = table_cache_->NewIterator(options, files[i]->number,
@@ -1371,6 +1374,7 @@ Iterator* VersionSet::MakeInputIterator(Compaction* c) {
         }
       } else {
         // Create concatenating iterator for the files from this level
+        // 为这个层所有生成一个TwoLevelIterator
         list[num++] = NewTwoLevelIterator(
             new Version::LevelFileNumIterator(icmp_, &c->inputs_[which]),
             &GetFileIterator, table_cache_, options);
@@ -1378,7 +1382,7 @@ Iterator* VersionSet::MakeInputIterator(Compaction* c) {
     }
   }
   assert(num <= space);
-  Iterator* result = NewMergingIterator(&icmp_, list, num);
+  Iterator* result = NewMergingIterator(&icmp_, list, num); // 最后生成一个MergingIterator
   delete[] list;
   return result;
 }
@@ -1711,7 +1715,9 @@ bool Compaction::IsBaseLevelForKey(const Slice& user_key) {
   return true;
 }
 
-//TODO：看完dbimpl再来补这个注释
+// 这个函数用来避免生成的表文件跟下一层的文件重叠太多，
+// 通俗点就是，如果加入的键例如internal_key使重叠字节刚好好大于某个阀值，则接下来的键则不会放到internal_key所在的表文件，而是另外放到新的表文件里面
+// 这个函数的处理方式跟上面IsBaseLevelForKey函数类似，都是用一些变量保存当前进度的索引，因为每次调用这个函数的键都比上一次大，没必要重新开始
 bool Compaction::ShouldStopBefore(const Slice& internal_key) {
   const VersionSet* vset = input_version_->vset_;
   // Scan to find earliest grandparent file that contains key.

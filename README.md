@@ -57,3 +57,13 @@
 [leveldb iterator](http://catkang.github.io/2017/02/12/leveldb-iterator.html)
 
 [leveldb db_iter](https://blog.csdn.net/weixin_36145588/article/details/78690482)
+
+[leveldb compaction](https://zhuanlan.zhihu.com/p/481871525)
+
+[leveldb db的Write方法](https://zhuanlan.zhihu.com/p/80529047)
+
+[leveldb 读流程](https://zhuanlan.zhihu.com/p/372152739)
+
+[leveldb 写流程](https://zhuanlan.zhihu.com/p/382034971)
+
+遇到问题看不懂，上面文章能给点提示
