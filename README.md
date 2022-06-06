@@ -32,6 +32,8 @@
 
 [日志格式](https://github.com/ejunjsh/myleveldb/blob/main/doc/log_format.md)
 
+[实现细节](https://github.com/ejunjsh/myleveldb/blob/main/doc/impl.md)
+
 ## 参考
 
 [leveldb源码](https://github.com/google/leveldb)
