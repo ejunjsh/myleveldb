@@ -2,6 +2,10 @@
 
 看leveldb，加中文注释，顺便学c++
 
+看代码之前建议看看这个：
+
+[使用和实现文档翻译](https://github.com/ejunjsh/myleveldb/blob/main/doc/index.md)
+
 ## 看代码路径
 
 -> include/leveldb/status -> util/status -> util/arena -> include/leveldb/slice -> include/leveldb/filter_policy
@@ -25,14 +29,6 @@
 -> db/memtable -> db/snapshot -> db/table_cache -> db/version_edit -> db/version_set -> db/db_iter
 
 -> include/leveldb/write_batch -> db/write_batch_internal -> db/write_batch -> db/builder -> db/db_impl
-
-## 相关文档翻译
-
-[sstable格式](https://github.com/ejunjsh/myleveldb/blob/main/doc/table_format.md)
-
-[日志格式](https://github.com/ejunjsh/myleveldb/blob/main/doc/log_format.md)
-
-[实现细节](https://github.com/ejunjsh/myleveldb/blob/main/doc/impl.md)
 
 ## 参考
 
