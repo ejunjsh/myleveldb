@@ -34,6 +34,8 @@
 
 [leveldb源码](https://github.com/google/leveldb)
 
+遇到问题看不懂，下面文章能给点提示:
+
 [sstable 格式](https://www.cnblogs.com/cobbliu/p/6194072.html)
 
 [leveldb NoDestructor类解析](https://blog.csdn.net/kdb_viewer/article/details/108471710)
@@ -64,4 +66,3 @@
 
 [leveldb 写流程](https://zhuanlan.zhihu.com/p/382034971)
 
-遇到问题看不懂，上面文章能给点提示
